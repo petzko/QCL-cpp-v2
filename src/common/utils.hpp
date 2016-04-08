@@ -15,16 +15,18 @@
 #include <stdlib.h>
 
 #include <map>
+#include <vector>
 
 #include <gsl/gsl_cblas.h>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_complex.h>
 
-#define DATASTRUCT_OUT_WRN(str,FILE,LINE){\
-	std::cout<<"\nWARNING: (in FILE:" << FILE << "; LINE:" << LINE << ") :\n" << str << "\n";}
 
-#define DATASTRUCT_OUT_ERR(str,FILE,LINE){\
-	std::cout<<"FILE:" << FILE << " LINE:" << LINE << ": \n ERROR:" << str << "\n";}
+#define MB_OUT_WRN(str,FILE,LINE){\
+	std::cout<<"FILE:" << FILE << " LINE:" << LINE << ":\n->WARNING: " << str << "\n";}
+
+#define MB_OUT_ERR(str,FILE,LINE){\
+	std::cout<<"FILE:" << FILE << " LINE:" << LINE << ": \n->ERROR: " << str << "\n";}
 
 #define max(x,y){ (x>y ? x:y)}
 #define min(x,y){ (x<y ? x:y)}
@@ -39,7 +41,6 @@ const int CPLXDBL = 3;
 
 std::ostream& operator<<(std::ostream& out, complex double nr);
 std::ostream& operator<<(std::ostream& out, complex float nr);
-
 
 template<typename _Tp>
 int gettype() {
@@ -63,13 +64,16 @@ int gettype() {
 }
 
 
+
 // predefine the matrix and matrixview classes!
-namespace dat {
+namespace MB {
 
 template<class _Tp> class Matrix;
 template<class _Tp> class MatrixView;
 
 
 }
+
+
 
 #endif /* INCLUDE_UTILS_HPP_ */
