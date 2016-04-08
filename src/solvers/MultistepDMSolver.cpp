@@ -98,8 +98,9 @@ MB::Matrix<_Tp> MB::MultistepDMSolver<_Tp>::makeStep(MB::Matrix<_Tp> rhs, double
 		_coefs = getCoeffs(_iterCtr,_m);
 
 	/*
-	 * circularly shift the rows of the data MTX
+	 *  circularly shift the rows of the data MTX
 	 */
+
 	for(int k = 0; k < _m-1; k++){
 		_data.setRowPtr(k,_data.getMtxData()[k+1]);
 	}

@@ -10,6 +10,7 @@ RM := rm -rf
 -include sources.mk
 -include test/subdir.mk
 -include src/solvers/subdir.mk
+-include src/parsers/subdir.mk
 -include src/matrix/subdir.mk
 -include src/common/subdir.mk
 -include src/subdir.mk

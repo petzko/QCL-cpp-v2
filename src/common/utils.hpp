@@ -40,6 +40,9 @@ const int FLT = 0;
 const int DBL = 1;
 const int CPLXFLT = 2;
 const int CPLXDBL = 3;
+const int INTGR = 4;
+const int D_PTR = 5;
+
 
 std::ostream& operator<<(std::ostream& out, complex double nr);
 std::ostream& operator<<(std::ostream& out, complex float nr);
@@ -60,10 +63,37 @@ int gettype() {
 		return CPLXFLT;
 	if (typeid(_Tp) == typeid(cdbl))
 		return CPLXDBL;
-
 	return -1;
 
 }
+
+template<typename _Tp>
+int gettype(_Tp in) {
+
+	double dbl = 0.;
+	float flt = 0.;
+	complex double cdbl = 0. + I;
+	complex float cflt = 0. + I;
+
+	int intr = 1;
+	double* dptr;
+
+	if (typeid(in) == typeid(flt))
+		return FLT;
+	if (typeid(in) == typeid(dbl))
+		return DBL;
+	if (typeid(in) == typeid(cflt))
+		return CPLXFLT;
+	if (typeid(in) == typeid(cdbl))
+		return CPLXDBL;
+	if (typeid(in) == typeid(intr))
+			return INTGR;
+	if (typeid(in) == typeid(cdbl))
+			return D_PTR;
+	return -1;
+
+}
+
 
 
 
