@@ -16,6 +16,8 @@
 
 #include <map>
 #include <vector>
+#include <assert.h>
+
 
 #include <gsl/gsl_cblas.h>
 #include <gsl/gsl_vector.h>
@@ -60,17 +62,6 @@ int gettype() {
 		return CPLXDBL;
 
 	return -1;
-
-}
-
-
-
-// predefine the matrix and matrixview classes!
-namespace MB {
-
-template<class _Tp> class Matrix;
-template<class _Tp> class MatrixView;
-
 
 }
 

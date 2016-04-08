@@ -17,7 +17,7 @@ MB::RNFDSolver<_Tp>::RNFDSolver(unsigned int N, double dx, bool direction, doubl
 	this->_sol = U_0;
 }
 template<typename _Tp>
-MB::Matrix<_Tp>& MB::RNFDSolver<_Tp>::makeStep(MB::Matrix<_Tp> F, MB::Matrix<_Tp> F_t, MB::Matrix<_Tp> K, double dt) {
+MB::Matrix<_Tp> MB::RNFDSolver<_Tp>::makeStep(MB::Matrix<_Tp> F, MB::Matrix<_Tp> F_t, MB::Matrix<_Tp> K, double dt) {
 
 	if(this->_c*dt != this->_dx){
 		MB_OUT_ERR("RNFDsolver make step failed! Magic time step not selected!",__FILE__,__LINE__);
@@ -113,7 +113,7 @@ void  MB::RNFDSolver<_Tp>::setLatestSolution(MB::Matrix<_Tp> sol){
 }
 
 template<typename _Tp>
-MB::Matrix<_Tp>&  MB::RNFDSolver<_Tp>::getLatestSolution(){
+MB::Matrix<_Tp>  MB::RNFDSolver<_Tp>::getLatestSolution(){
 	return this->_sol;
 }
 template<typename _Tp>

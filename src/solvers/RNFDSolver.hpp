@@ -9,7 +9,6 @@
 #define SRC_SOLVERS_RNFDSOLVER_HPP_
 
 #include "PropagationEqnSolver.hpp"
-#include "../matrix/matrix.hpp"
 
 
 namespace MB{
@@ -26,7 +25,7 @@ private:
 public:
 
 	RNFDSolver(unsigned int N, double dx, bool direction, double velocity, MB::Matrix<_Tp> U_0);
-	MB::Matrix<_Tp>& makeStep(MB::Matrix<_Tp> F, MB::Matrix<_Tp> F_t, MB::Matrix<_Tp> K, double dt) ;
+	MB::Matrix<_Tp> makeStep(MB::Matrix<_Tp> F, MB::Matrix<_Tp> F_t, MB::Matrix<_Tp> K, double dt) ;
 
 	/**
 	 * set the boundary of the wave vector!
@@ -35,7 +34,7 @@ public:
 	 */
 	void setBdry(_Tp val,unsigned int flag);
 	void setLatestSolution(Matrix<_Tp> sol);
-	Matrix<_Tp>& getLatestSolution();
+	Matrix<_Tp> getLatestSolution();
 
 	virtual ~RNFDSolver();
 

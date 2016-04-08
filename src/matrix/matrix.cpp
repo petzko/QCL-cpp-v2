@@ -31,6 +31,10 @@ _Tp** const Matrix<_Tp>::getMtxData() const {
  * the param dim_i specifies the number of rows and the param dim_j the number of columns.
  */
 template<typename _Tp>
+_Tp* Matrix<_Tp>::setRowPtr(unsigned int fromIdx,_Tp* toPtr){_Tp* fromPtr = _data[fromIdx]; _data[fromIdx] = toPtr; return fromPtr;}
+
+
+template<typename _Tp>
 void Matrix<_Tp>::init(unsigned int dim_i, unsigned int dim_j) {
 
 	_dimI = dim_i;

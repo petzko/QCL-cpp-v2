@@ -19,7 +19,7 @@ private:
 
 public:
 
-
+	_Tp* setRowPtr(unsigned int fromIdx,_Tp* toPtr);
 	unsigned int getLen(){return _len;}
 	void init(unsigned int dim_i, unsigned int dim_j);
 
