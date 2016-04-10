@@ -14,7 +14,6 @@ RM := rm -rf
 -include src/matrix/subdir.mk
 -include src/common/subdir.mk
 -include src/subdir.mk
--include build/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -44,19 +43,19 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: qcl-sim-cpp
+all: QCL-cpp-v2
 
 # Tool invocations
-qcl-sim-cpp: $(OBJS) $(USER_OBJS)
+QCL-cpp-v2: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L"/home/petzko/workspace/qcl-sim-cpp/lib" -o "qcl-sim-cpp" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L"/home/petz/workspaces/eclipse/QCL-cpp-v2/lib" -o "QCL-cpp-v2" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) qcl-sim-cpp
+	-$(RM) $(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) QCL-cpp-v2
 	-@echo ' '
 
 .PHONY: all clean dependents

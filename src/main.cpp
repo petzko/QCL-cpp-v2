@@ -6,7 +6,7 @@ using namespace MB;
 
 // placeholder for the desired type !
 
-#define _TYPE complex float
+#define _TYPE float
 //
 //
 //MB::Matrix<float> mMult(MB::Matrix<float> A, MB::Matrix<float> B){
@@ -31,7 +31,7 @@ void compute(){
 	MB::Matrix<_TYPE> m1 = eye<_TYPE>(4);
 	MB::Matrix<_TYPE> m2 = 2*eye<_TYPE>(4);
 
-	std::cout << "Assignment operator testing!\n";
+	std::cout << "Assignment operator te	sting!\n";
 	std::cout << "M1 before: \n";
 	std::cout << m1;
 	m1(1,1) = -5;
@@ -100,12 +100,11 @@ void swaprows(){
 	m1.setRowPtr(0,tmp1);
 	std::cout<< "M1 after swap: \n";
 	std::cout << m1;
-
 }
 
 int main() {
 
-//	compute();
+	compute();
 	swaprows();
 	std::cout<<"Goodbye world\n";
 

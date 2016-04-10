@@ -31,7 +31,12 @@ _Tp** const Matrix<_Tp>::getMtxData() const {
  * the param dim_i specifies the number of rows and the param dim_j the number of columns.
  */
 template<typename _Tp>
-_Tp* Matrix<_Tp>::setRowPtr(unsigned int fromIdx,_Tp* toPtr){_Tp* fromPtr = _data[fromIdx]; _data[fromIdx] = toPtr; return fromPtr;}
+_Tp* Matrix<_Tp>::setRowPtr(unsigned int fromIdx,_Tp* toPtr){
+
+	_Tp* fromPtr = _data[fromIdx];
+	_data[fromIdx] = toPtr;
+	return fromPtr;
+}
 
 
 template<typename _Tp>
@@ -40,11 +45,26 @@ void Matrix<_Tp>::init(unsigned int dim_i, unsigned int dim_j) {
 	_dimI = dim_i;
 	_dimJ = dim_j;
 
-	_Tp* tmp_data = (_Tp*) calloc(_dimI * _dimJ, sizeof(_Tp));
-	_data = (_Tp**) calloc(_dimI, sizeof(_Tp*));
+	/**
+	 * FULLY CONTIGUOUS ALLOCATION OF DATA IN MEMORY does not work
+	 * with swaprows functionality!
+	 *
+	 * evaluate if the speedup I get from swappig pointers outweights the speedup which I get from having all data
+	 * stored contiguously in memory!
+	 *
+	 *
+	 */
+//	_Tp* tmp_data = (_Tp*) calloc(_dimI * _dimJ, sizeof(_Tp));
+//	_data = (_Tp**) calloc(_dimI, sizeof(_Tp*));
+//
+//	for (int i = 0; i < _dimI; i++)
+//		_data[i] = tmp_data + i * _dimJ;
 
-	for (int i = 0; i < _dimI; i++)
-		_data[i] = tmp_data + i * _dimJ;
+//	_Tp* tmp_data = (_Tp*) calloc(_dimI * _dimJ, sizeof(_Tp));
+		_data = (_Tp**) calloc(_dimI, sizeof(_Tp*));
+
+		for (int i = 0; i < _dimI; i++)
+			_data[i] =  (_Tp*) calloc(_dimJ, sizeof(_Tp));;
 
 	_bytes = _dimI * _dimJ * sizeof(_Tp);
 	_i1 =  0; _i2 =  _dimI-1;
@@ -59,7 +79,10 @@ void Matrix<_Tp>::init(unsigned int dim_i, unsigned int dim_j) {
 template<typename _Tp>
 Matrix<_Tp>::~Matrix() {
 	// first free the data elements
-	free(_data[0]);
+//	free(_data[0]);
+	for (int i = 0; i < _dimI; i++)
+				free(_data[i]);
+
 	// then free the pointers!
 	free(_data);
 }
@@ -331,10 +354,10 @@ Matrix<_Tp> Matrix<_Tp>::operator*(const Matrix<_Tp>& arg) const {
 	int L = arg.getDim_j();
 	Matrix<_Tp> res(this->getDim_i(), L);
 
-	complex float alpha_f = 1.0;
-	complex double alpha_d = 1.0;
-	complex float beta_f = 0.;
-	complex double beta_d = 0.;
+	std::complex<float> alpha_f = 1.0;
+	std::complex<double> alpha_d = 1.0;
+	std::complex<double> beta_d = 0.;
+	std::complex<float>  beta_f = 0.;
 	switch (gettype<_Tp>()) {
 	case FLT:
 
@@ -390,8 +413,8 @@ Matrix<_Tp> Matrix<_Tp>::operator+(const Matrix<_Tp>& arg) const {
 	// (_i2-_i1 + 1) x (_j2 - _j1 + 1) , i.e. the size of the current slice of this and arg!
 	Matrix<_Tp> res = arg;
 
-	complex double alpha_d = 1.;
-	complex float alpha_f = 1.;
+	std::complex<double> alpha_d = 1.;
+	std::complex<float>  alpha_f = 1.;
 	unsigned int N = _j2-_j1+1;
 
 	switch (gettype<_Tp>()) {
@@ -434,6 +457,6 @@ Matrix<_Tp> Matrix<_Tp>::operator-(const Matrix<_Tp>& arg) {
 	return (*this) + res;
 }
 template class MB::Matrix<float>;
-template class MB::Matrix< complex float>;
+template class MB::Matrix< std::complex<float> >;
 template class MB::Matrix<double>;
-template class MB::Matrix<complex double>;
+template class MB::Matrix<std::complex<double> >;

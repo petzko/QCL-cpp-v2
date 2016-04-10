@@ -51,9 +51,9 @@ struct SimSettings{
 	//voltage applied to the laser (in volts)
 	double voltage;
 	//pure dephasing on/off
-	int deph = 1
+	int deph = 1;
 	//pure dephasing  time for the inj -> ull transition[ps] if any
-	double Tdeph_1 ;
+	double Tdeph_1;
 	//pure dephasing  times for the inj -> lll and ull->lll transition[ps] if any
 	double Tdeph_2;
 	//pure dephasing  times for the inj -> lll and ull->lll transition[ps] if any

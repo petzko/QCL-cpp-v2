@@ -123,6 +123,6 @@ MB::RNFDSolver<_Tp>::~RNFDSolver(){
 
 
 template class MB::RNFDSolver<float>;
-template class MB::RNFDSolver< complex float>;
+template class MB::RNFDSolver< std::complex<float> >;
 template class MB::RNFDSolver<double>;
-template class MB::RNFDSolver<complex double>;
+template class MB::RNFDSolver<std::complex<double> >;
