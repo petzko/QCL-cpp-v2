@@ -34,10 +34,12 @@ private:
 public:
 
 	MultistepDMSolver(unsigned int nrSteps,unsigned int nrPts,MB::Matrix<_Tp> initRhsDat,MB::Matrix<_Tp> initSol);
+	MultistepDMSolver(unsigned int nrSteps,unsigned int nrPts,MB::Matrix<_Tp> initSol);
+
 	MB::Matrix<_Tp> makeStep(MB::Matrix<_Tp> rhs, double dt);
 	MB::Matrix<_Tp> getLatestSolution();
-
 	void setLatestSolution(MB::Matrix<_Tp> newsol);
+
 	virtual ~MultistepDMSolver();
 
 };

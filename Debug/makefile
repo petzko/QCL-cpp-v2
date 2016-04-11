@@ -10,10 +10,12 @@ RM := rm -rf
 -include sources.mk
 -include test/subdir.mk
 -include src/solvers/subdir.mk
+-include src/sim/subdir.mk
 -include src/parsers/subdir.mk
 -include src/matrix/subdir.mk
 -include src/common/subdir.mk
 -include src/subdir.mk
+-include build/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -43,19 +45,19 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: QCL-cpp-v2
+all: qcl-sim-cpp
 
 # Tool invocations
-QCL-cpp-v2: $(OBJS) $(USER_OBJS)
+qcl-sim-cpp: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L"/home/petz/workspaces/eclipse/QCL-cpp-v2/lib" -o "QCL-cpp-v2" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L"/home/petzko/workspace/qcl-sim-cpp/lib" -o "qcl-sim-cpp" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) QCL-cpp-v2
+	-$(RM) $(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) qcl-sim-cpp
 	-@echo ' '
 
 .PHONY: all clean dependents

@@ -17,7 +17,7 @@ MB::RNFDSolver<_Tp>::RNFDSolver(unsigned int N, double dx, bool direction, doubl
 	this->_sol = U_0;
 }
 template<typename _Tp>
-MB::Matrix<_Tp> MB::RNFDSolver<_Tp>::makeStep(MB::Matrix<_Tp> F, MB::Matrix<_Tp> F_t, MB::Matrix<_Tp> K, double dt) {
+_Tp MB::RNFDSolver<_Tp>::makeStep(MB::Matrix<_Tp> F, MB::Matrix<_Tp> F_t, MB::Matrix<_Tp> K, double dt) {
 
 	if(this->_c*dt != this->_dx){
 		MB_OUT_ERR("RNFDsolver make step failed! Magic time step not selected!",__FILE__,__LINE__);
@@ -32,11 +32,8 @@ MB::Matrix<_Tp> MB::RNFDSolver<_Tp>::makeStep(MB::Matrix<_Tp> F, MB::Matrix<_Tp>
 
 
 
-	//
 	//	 The solver assumes an equation of the form
 	//	 D_t(E) = -/+ D_x(E) + f(x,t) + k E
-
-
 	_sol.resetSlice();
 	MB::Matrix<_Tp> E = _sol;
 
@@ -66,7 +63,6 @@ MB::Matrix<_Tp> MB::RNFDSolver<_Tp>::makeStep(MB::Matrix<_Tp> F, MB::Matrix<_Tp>
 	 *
 	 */
 
-
 	if(this->_direction > 0){
 		// 1:N-1
 		_sol.setSlice(0,0,1,_N-1);
@@ -88,7 +84,14 @@ MB::Matrix<_Tp> MB::RNFDSolver<_Tp>::makeStep(MB::Matrix<_Tp> F, MB::Matrix<_Tp>
 	}
 
 	this->_sol.resetSlice();
-	return this->_sol;
+
+	_Tp res;
+	if(_direction > 0 )
+		res = _sol(0,_N-1);
+	else
+		res = _sol(0,0);
+
+	return res;
 
 }
 

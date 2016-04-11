@@ -8,9 +8,16 @@
 #ifndef SRC_SIM_SIMSETTINGS_HPP_
 #define SRC_SIM_SIMSETTINGS_HPP_
 
+#include "../common/utils.hpp"
+#include "../parsers/SimFileParser.hpp"
 
+namespace MB{
 
 struct SimSettings{
+
+public:
+
+
 
 	//simulattion name
 	std::string simname;
@@ -71,13 +78,20 @@ struct SimSettings{
 	int nrSteps;
 
 	double zUL; // dipole matrix element
-	double* HTB;// TB-hamiltonian
-	double* Wmtx;// scattering rates mtx
+	std::vector<double> HTB;// TB-hamiltonian
+	std::vector<double> Wmtx;// scattering rates mtx
 
+
+
+	char* setFileName;
+	char* simFileName;
+	SimSettings(char* simFName,char* setFName);
+	void initSimSettings();
+	~SimSettings();
 };
 
 
 
-
+}
 
 #endif /* SRC_SIM_SIMSETTINGS_HPP_ */

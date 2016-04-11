@@ -25,8 +25,10 @@ C_UPPER_DEPS :=
 SUBDIRS := \
 test \
 src/solvers \
+src/sim \
 src/parsers \
 src/matrix \
 src \
 src/common \
+build \
 

@@ -16,8 +16,11 @@ template<typename _Tp>
 
 class DMSolver{
 
-	virtual MB::Matrix<_Tp>& makeStep(MB::Matrix<_Tp> rhs, double dt) = 0;
-
+public:
+	virtual MB::Matrix<_Tp> makeStep(MB::Matrix<_Tp> rhs, double dt) = 0;
+	virtual MB::Matrix<_Tp> getLatestSolution() = 0;
+	virtual void setLatestSolution(MB::Matrix<_Tp> newsol)= 0;
+	virtual ~DMSolver(){;} ;
 };
 
 }

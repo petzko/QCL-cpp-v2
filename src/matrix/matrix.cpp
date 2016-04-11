@@ -11,12 +11,12 @@ using namespace MB;
 
 
 template<typename _Tp>
-unsigned int Matrix<_Tp>::getDim_i() const {
+int Matrix<_Tp>::getDim_i() const {
 	return _dimI;
 }
 
 template<typename _Tp>
-unsigned int Matrix<_Tp>::getDim_j() const {
+int Matrix<_Tp>::getDim_j() const {
 	return _dimJ;
 }
 
@@ -31,7 +31,7 @@ _Tp** const Matrix<_Tp>::getMtxData() const {
  * the param dim_i specifies the number of rows and the param dim_j the number of columns.
  */
 template<typename _Tp>
-_Tp* Matrix<_Tp>::setRowPtr(unsigned int fromIdx,_Tp* toPtr){
+_Tp* Matrix<_Tp>::setRowPtr(int fromIdx,_Tp* toPtr){
 
 	_Tp* fromPtr = _data[fromIdx];
 	_data[fromIdx] = toPtr;
@@ -40,7 +40,7 @@ _Tp* Matrix<_Tp>::setRowPtr(unsigned int fromIdx,_Tp* toPtr){
 
 
 template<typename _Tp>
-void Matrix<_Tp>::init(unsigned int dim_i, unsigned int dim_j) {
+void Matrix<_Tp>::init(int dim_i, int dim_j) {
 
 	_dimI = dim_i;
 	_dimJ = dim_j;
@@ -54,24 +54,31 @@ void Matrix<_Tp>::init(unsigned int dim_i, unsigned int dim_j) {
 	 *
 	 *
 	 */
-//	_Tp* tmp_data = (_Tp*) calloc(_dimI * _dimJ, sizeof(_Tp));
-//	_data = (_Tp**) calloc(_dimI, sizeof(_Tp*));
-//
-//	for (int i = 0; i < _dimI; i++)
-//		_data[i] = tmp_data + i * _dimJ;
+	//	_Tp* tmp_data = (_Tp*) calloc(_dimI * _dimJ, sizeof(_Tp));
+	//	_data = (_Tp**) calloc(_dimI, sizeof(_Tp*));
+	//
+	//	for (int i = 0; i < _dimI; i++)
+	//		_data[i] = tmp_data + i * _dimJ;
 
-//	_Tp* tmp_data = (_Tp*) calloc(_dimI * _dimJ, sizeof(_Tp));
-		_data = (_Tp**) calloc(_dimI, sizeof(_Tp*));
+	//	_Tp* tmp_data = (_Tp*) calloc(_dimI * _dimJ, sizeof(_Tp));
+	_data = (_Tp**) calloc(_dimI, sizeof(_Tp*));
 
-		for (int i = 0; i < _dimI; i++)
-			_data[i] =  (_Tp*) calloc(_dimJ, sizeof(_Tp));;
+	for (int i = 0; i < _dimI; i++)
+		_data[i] =  (_Tp*) calloc(_dimJ, sizeof(_Tp));;
 
 	_bytes = _dimI * _dimJ * sizeof(_Tp);
 	_i1 =  0; _i2 =  _dimI-1;
-	_j1 =  0; _j2 = _dimJ-1;
+	_j1 =  0; _j2 = _dimJ-1 ;
 
 	_len = _dimI*_dimJ;
 }
+
+
+template<typename _Tp>
+Matrix<_Tp>::Matrix(){
+	_data = NULL;
+}
+
 
 /*
  * Destructor
@@ -79,28 +86,32 @@ void Matrix<_Tp>::init(unsigned int dim_i, unsigned int dim_j) {
 template<typename _Tp>
 Matrix<_Tp>::~Matrix() {
 	// first free the data elements
-//	free(_data[0]);
-	for (int i = 0; i < _dimI; i++)
-				free(_data[i]);
+	//	free(_data[0]);
 
-	// then free the pointers!
-	free(_data);
+	if(_data != NULL){
+		for (int i = 0; i < _dimI; i++){
+			if(_data[i] !=NULL)
+				free(_data[i]);
+		}
+		free(_data);
+
+	}
 }
 
 template<typename _Tp>
-Matrix<_Tp>::Matrix(unsigned int dim_i, unsigned int dim_j) {
+Matrix<_Tp>::Matrix(int dim_i, int dim_j) {
 	init(dim_i, dim_j);
-	_i1 = 0; _i2 = _dimI-1;
+	_i1 = 0;  _i2 =   _dimI-1 ;
 	_j1 = 0; _j2 = _dimJ-1;
 }
 
 template<typename _Tp >
-Matrix<_Tp> Matrix<_Tp>::getSliceMtx(unsigned int i1, unsigned int i2, unsigned int j1,
-		unsigned int j2){
+Matrix<_Tp> Matrix<_Tp>::getSliceMtx(int i1, int i2, int j1,
+		int j2){
 
 
-	unsigned int rows = i2-i1+1;
-	unsigned int cols = j2-j1+1;
+	int rows = i2-i1+1;
+	int cols = j2-j1+1;
 	if(rows < 0 || rows > this->_dimI || cols < 0 || cols > this->_dimJ)
 	{
 		MB_OUT_ERR("Submatrix is of invalid size. Cannot proceed",
@@ -146,14 +157,14 @@ Matrix<_Tp> Matrix<_Tp>::getSliceMtx(unsigned int i1, unsigned int i2, unsigned 
 
 }
 template<typename _Tp>
-std::vector<unsigned int> MB::Matrix<_Tp>::getSliceVector() const{
-	std::vector<unsigned int> res(4);
+std::vector<int> MB::Matrix<_Tp>::getSliceVector() const{
+	std::vector<int> res(4);
 	res[0] = _i1; res[1] = _i2; res[2] = _j1; res[3] = _j2;
 	return res;
 }
 
 template<typename _Tp>
-void MB::Matrix<_Tp>::setSlice(unsigned int i1, unsigned int i2, unsigned int j1, unsigned int j2){
+void MB::Matrix<_Tp>::setSlice(int i1, int i2, int j1, int j2){
 
 	if(i1 < 0 || i2 >= this->_dimI || j1 < 0 || j2 >= this->_dimJ)
 	{
@@ -165,7 +176,7 @@ void MB::Matrix<_Tp>::setSlice(unsigned int i1, unsigned int i2, unsigned int j1
 
 	this->_i1 = i1; this->_i2 = i2;
 	this-> _j1 = j1; this->_j2 = j2;
-	std::vector<unsigned int> slice = this->getSliceVector();
+	std::vector<int> slice = this->getSliceVector();
 
 
 }
@@ -176,12 +187,12 @@ void MB::Matrix<_Tp>::resetSlice(){
 
 
 template<typename _Tp >
-void Matrix<_Tp>::operator()(Matrix<_Tp> inMatrix, unsigned int i1, unsigned int i2, unsigned int j1,
-		unsigned int j2){
+void Matrix<_Tp>::operator()(Matrix<_Tp> inMatrix, int i1, int i2, int j1,
+		int j2){
 
 
-	unsigned int rows = i2-i1+1;
-	unsigned int cols = j2-j1+1;
+	int rows = i2-i1+1;
+	int cols = j2-j1+1;
 
 	if(rows < 0 || rows > this->_dimI || cols < 0 || cols > this->_dimJ)
 	{
@@ -276,13 +287,13 @@ Matrix<_Tp>::Matrix(const Matrix<_Tp>& arg) {
 
 // make the function call operator retrive the i,j th data element
 template<typename _Tp>
-_Tp& Matrix<_Tp>::operator()(unsigned int const i, unsigned const int j) const {
+_Tp& Matrix<_Tp>::operator()(int const i,   int const j) const {
 
 	if (i >= this->getDim_i() || i < 0) {
 		MB_OUT_ERR(
 				" operator(i,j)! Array index out of bounds. Cannot retrieve Matrix element. ",
 				__FILE__, __LINE__)
-																		throw std::out_of_range("row index out of bounds.");
+																								throw std::out_of_range("row index out of bounds.");
 
 	}
 
@@ -290,7 +301,7 @@ _Tp& Matrix<_Tp>::operator()(unsigned int const i, unsigned const int j) const {
 		MB_OUT_ERR(
 				"operator(i,j)! Array index out of bounds. Cannot retrieve Matrix element. ",
 				__FILE__, __LINE__)
-																		throw std::out_of_range("column index out of bounds.");
+																								throw std::out_of_range("column index out of bounds.");
 	}
 
 	return _data[i][j];
@@ -311,9 +322,9 @@ Matrix<_Tp>& Matrix<_Tp>::operator=(const Matrix<_Tp>& arg) {
 		MB_OUT_ERR(" copy assignment operator! Mtx dimensions mismatch!",__FILE__,__LINE__);
 		throw std::length_error("Matrix Dimensions do not aggree.");
 	}
-	std::vector<unsigned int> slice = arg.getSliceVector();
+	std::vector<int> slice = arg.getSliceVector();
 
-	unsigned int N = _j2-_j1+1;
+	int N = _j2-_j1+1;
 
 	switch (gettype<_Tp>()){
 	case FLT:
@@ -406,7 +417,7 @@ Matrix<_Tp> Matrix<_Tp>::operator+(const Matrix<_Tp>& arg) const {
 		MB_OUT_ERR(" copy assignment operator! Mtx dimensions mismatch!",__FILE__,__LINE__);
 		throw std::length_error("Matrix Dimensions do not aggree.");
 	}
-	std::vector<unsigned int> slice = arg.getSliceVector();
+	std::vector<int> slice = arg.getSliceVector();
 
 	//the below operation invokes the copy constructor!
 	// the result matrix will be of size
@@ -415,7 +426,7 @@ Matrix<_Tp> Matrix<_Tp>::operator+(const Matrix<_Tp>& arg) const {
 
 	std::complex<double> alpha_d = 1.;
 	std::complex<float>  alpha_f = 1.;
-	unsigned int N = _j2-_j1+1;
+	int N = _j2-_j1+1;
 
 	switch (gettype<_Tp>()) {
 	case FLT:

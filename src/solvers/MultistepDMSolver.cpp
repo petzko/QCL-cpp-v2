@@ -11,43 +11,14 @@
 template<typename _Tp>
 MB::MultistepDMSolver<_Tp>::MultistepDMSolver (unsigned int nrSteps,unsigned int nrPts,MB::Matrix<_Tp> initRhsDat,MB::Matrix<_Tp> initSol) : _MAXSTEPS(5) {
 
-
-	/**
-	 *    MATLAB CODE !
-	 *    % do some error checking ...
-	 *           assert(nr_steps >=1,'please set a positive nr of steps for the MULTIstep algorithm to run correctly.');
-	 *           assert(nr_steps <= 5,['unfortunately current implementation does not support more then a 5 step adams bashforth algorithm!'...
-	 *               ' Please specify a new nr of steps parameter and try again,']);
-	 *           [ rowdim,coldim ]  = size(init_rhs_data);
-	 *           % do some assertions
-	 *           assert((coldim >=0 && coldim <=(nr_steps-1)), 'Incorrectly specified initial data! Please try again');
-	 *
-	 *           %if all data is correctly initalized, proceed with the
-	 *           %constructor...
-	 *
-	 *           obj.m = nr_steps;
-	 *           obj.N = nr_pts;
-	 *
-	 *           obj.data = zeros(obj.N,obj.m);
-	 *           for k = 1:coldim
-	 *               obj.data(:,k+1) = init_rhs_data(:,coldim - k+1);
-	 *           end
-	 *
-	 *          % solution at step n2
-	 *           obj.coefs = get_coeffs(obj.m);
-	 *          obj.prev_solution = init_solution(); % this sets - up the inital data...
-	 *           obj.iter_ctr = coldim+1;
-	 */
-
 	assert(nrSteps>=1);
 	assert(nrSteps <= _MAXSTEPS); // check if nrSteps is in order!
-	unsigned int rowDim = initRhsDat.getDim_i();
 	unsigned int colDim = initRhsDat.getDim_j();
 	assert((colDim >= 0 && colDim <= (nrSteps-1))); // check if init rhs data is in order
-	assert(rowDim == nrPts); // check if vector dimensions are in order
+	assert(initSol.getDim_j() == nrPts); // check if vector dimensions are in order
 
 	_m = nrSteps; _N = nrPts;
-	_data = MB::Matrix<_Tp>(_m,_N);
+	_data.init(_m,_N);
 
 	// assign the initial values in their correct location inside the _data member matrix
 	for(int k = 1 ; k <= colDim; k++){
@@ -57,32 +28,39 @@ MB::MultistepDMSolver<_Tp>::MultistepDMSolver (unsigned int nrSteps,unsigned int
 	}
 	_coefs = getCoeffs(colDim,_m);
 
+	_sol.init(1,_N);
 	_sol = initSol;
 	_iterCtr = colDim;
 }
 
+
+
+
+template<typename _Tp>
+MB::MultistepDMSolver<_Tp>::MultistepDMSolver (unsigned int nrSteps,unsigned int nrPts,MB::Matrix<_Tp> initSol) : _MAXSTEPS(5) {
+
+	assert(nrSteps>=1);
+	assert(nrSteps <= _MAXSTEPS); // check if nrSteps is in order!
+
+	assert(initSol.getDim_j() == nrPts); // check if vector dimensions are in order
+
+	_m = nrSteps; _N = nrPts;
+	_data.init(_m,_N);
+
+	_coefs = getCoeffs(1,_m);
+
+	_sol.init(1,_N);
+	_sol = initSol;
+	_iterCtr = 1;
+}
+
 template<typename _Tp>
 MB::Matrix<_Tp> MB::MultistepDMSolver<_Tp>::makeStep(MB::Matrix<_Tp> rhs, double dt){
-	/**
-	 *		MATLAB CODE:
-	 *		    % Make a single propagation step of size "dt"  from tn = n*dt -> to tn+1 = (n+1)*dt, using the stored
-	 *            % previous data. input arguments are the solver object itself,
-	 *           % the right hand side of the equation evaluated at the current timestep (tn) and the timestep size dt
-	 *
-	 *           [n1,n2] = size(prev_rhs);
-	 *           %check if vector dimensions are consice..
-	 *           err_msg = ['Cannot evolve equation ' ...
-	 *               'Rhs vector dimension does not agree with solution vector dimension.' ];
-	 *           assert(n1 == obj.N,err_msg);
-	 */
+
+
 	assert(rhs.getDim_j() == _N);
 	assert(rhs.getDim_i() ==  1); // we expect only a row vector!
 
-	/*           %%% this ensures that we get the right initial conditions
-	 *
-	 *           % replace the oldest rhs with the newest rhs
-	 *           obj.data(:,1) = prev_rhs;  % finally store the result...
-	 */
 	_data.setSlice(0,0,0,_N-1);
 	_data = rhs; // assign rhs to first position in data array
 	_data.resetSlice();
@@ -100,7 +78,6 @@ MB::Matrix<_Tp> MB::MultistepDMSolver<_Tp>::makeStep(MB::Matrix<_Tp> rhs, double
 	/*
 	 *  circularly shift the rows of the data MTX
 	 */
-
 	for(int k = 0; k < _m-1; k++){
 		_data.setRowPtr(k,_data.getMtxData()[k+1]);
 	}
@@ -113,7 +90,7 @@ MB::Matrix<_Tp> MB::MultistepDMSolver<_Tp>::getLatestSolution(){
 
 template<typename _Tp>
 void MB::MultistepDMSolver<_Tp>::setLatestSolution(MB::Matrix<_Tp> newsol){
-	this->_prefSolution = newsol;
+	this->_sol = newsol;
 }
 template<typename _Tp>
 MB::MultistepDMSolver<_Tp>::~MultistepDMSolver(){
@@ -153,3 +130,8 @@ std::vector<double> MB::MultistepDMSolver<_Tp>::getCoeffs(unsigned int step,unsi
 	return cfs;
 
 }
+
+template class MB::MultistepDMSolver<float>;
+template class MB::MultistepDMSolver< std::complex<float> >;
+template class MB::MultistepDMSolver<double>;
+template class MB::MultistepDMSolver<std::complex<double> >;
