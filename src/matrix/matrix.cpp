@@ -52,15 +52,16 @@ void Matrix<_Tp>::init(int dim_i, int dim_j) {
 	 * evaluate if the speedup I get from swappig pointers outweights the speedup which I get from having all data
 	 * stored contiguously in memory!
 	 *
+	 *  _Tp* tmp_data = (_Tp*) calloc(_dimI * _dimJ, sizeof(_Tp));
+	 *	_data = (_Tp**) calloc(_dimI, sizeof(_Tp*));
+	 *	for (int i = 0; i < _dimI; i++)
+	 *		_data[i] = tmp_data + i * _dimJ;
+	 *	_Tp* tmp_data = (_Tp*) calloc(_dimI * _dimJ, sizeof(_Tp));
+	 *
 	 *
 	 */
-	//	_Tp* tmp_data = (_Tp*) calloc(_dimI * _dimJ, sizeof(_Tp));
-	//	_data = (_Tp**) calloc(_dimI, sizeof(_Tp*));
-	//
-	//	for (int i = 0; i < _dimI; i++)
-	//		_data[i] = tmp_data + i * _dimJ;
 
-	//	_Tp* tmp_data = (_Tp*) calloc(_dimI * _dimJ, sizeof(_Tp));
+
 	_data = (_Tp**) calloc(_dimI, sizeof(_Tp*));
 
 	for (int i = 0; i < _dimI; i++)
@@ -136,12 +137,12 @@ Matrix<_Tp> Matrix<_Tp>::getSliceMtx(int i1, int i2, int j1,
 			cblas_dcopy(cols, (double*)_data[r+i1]+j1, 1,
 					(double*) res.getMtxData()[r], 1);
 		break;
-	case CPLXFLT:
+	case CPLX_FLOAT:
 		for(int r = 0 ; r < rows ;r ++ )
 			cblas_ccopy(cols, (void*)_data[r+i1]+j1, 1,
 					(void*) res.getMtxData()[r], 1);
 		break;
-	case CPLXDBL:
+	case CPLX_DOUBLE:
 		for(int r = 0; r < rows;r++ )
 			cblas_zcopy(cols,(void*)_data[r+i1]+j1, 1,
 					(void*) res.getMtxData()[r], 1);
@@ -166,20 +167,17 @@ std::vector<int> MB::Matrix<_Tp>::getSliceVector() const{
 template<typename _Tp>
 void MB::Matrix<_Tp>::setSlice(int i1, int i2, int j1, int j2){
 
-	if(i1 < 0 || i2 >= this->_dimI || j1 < 0 || j2 >= this->_dimJ)
-	{
+
+	if(i1 < 0 || i2 >= this->_dimI || j1 < 0 || j2 >= this->_dimJ){
 		MB_OUT_ERR(
 				"setSlice(...) ! Wrongly specified submatrix indices - dimension constraint violation",
 				__FILE__, __LINE__);
 		throw std::length_error("Length error exception thrown. Aborting! ");
 	}
-
 	this->_i1 = i1; this->_i2 = i2;
 	this-> _j1 = j1; this->_j2 = j2;
-	std::vector<int> slice = this->getSliceVector();
-
-
 }
+
 template<typename _Tp>
 void MB::Matrix<_Tp>::resetSlice(){
 	this->setSlice(0,this->_dimI-1,0,this->_dimJ-1);
@@ -224,12 +222,12 @@ void Matrix<_Tp>::operator()(Matrix<_Tp> inMatrix, int i1, int i2, int j1,
 			cblas_dcopy(cols, (double*)inMatrix.getMtxData()[r], 1,
 					(double*) this->getMtxData()[r+i1]+j1, 1);
 		break;
-	case CPLXFLT:
+	case CPLX_FLOAT:
 		for(int r = 0 ; r < rows ;r ++ )
 			cblas_ccopy(cols, (void*)inMatrix.getMtxData()[r], 1,
 					(void*) this->getMtxData()[r+i1]+j1, 1);
 		break;
-	case CPLXDBL:
+	case CPLX_DOUBLE:
 		for(int r = 0; r < rows;r++ )
 			cblas_zcopy(cols,(void*)inMatrix.getMtxData()[r], 1,
 					(void*) this->getMtxData()[r+i1]+j1, 1);
@@ -258,24 +256,20 @@ Matrix<_Tp>::Matrix(const Matrix<_Tp>& arg) {
 	switch (gettype<_Tp>()) {
 	case FLT:
 		for (int i = arg._i1; i <= arg._i2;i++)
-			cblas_scopy(N, (float*) arg.getMtxData()[i]+arg._j1, 1,
-					(float*) this->getMtxData()[i-arg._i1], 1);
+			cblas_scopy(N, (float*) arg.getMtxData()[i]+arg._j1, 1,	(float*) this->getMtxData()[i-arg._i1], 1);
 		break;
 
 	case DBL:
 		for (int i = arg._i1; i <= arg._i2;i++)
-			cblas_dcopy(N, (double*) arg.getMtxData()[i]+arg._j1, 1,
-					(double*) this->getMtxData()[i-arg._i1], 1);
+			cblas_dcopy(N, (double*) (arg.getMtxData()[i]+arg._j1), 1,(double*) (this->getMtxData()[i-arg._i1]), 1);
 		break;
-	case CPLXFLT:
+	case CPLX_FLOAT:
 		for (int i = arg._i1; i <= arg._i2;i++)
-			cblas_ccopy(N, (void*) arg.getMtxData()[i]+arg._j1, 1,
-					(void*) this->getMtxData()[i-arg._i1], 1);
+			cblas_ccopy(N, (void*) ((COMPLEXFLOAT*)arg.getMtxData()[i]+arg._j1), 1,(void*) (this->getMtxData()[i-arg._i1]), 1);
 		break;
-	case CPLXDBL:
+	case CPLX_DOUBLE:
 		for (int i = arg._i1; i <= arg._i2;i++)
-			cblas_zcopy(N, (void*) arg.getMtxData()[i]+arg._j1, 1,
-					(void*) this->getMtxData()[i-arg._i1], 1);
+			cblas_zcopy(N, (void*) ((COMPLEXDOUBLE*)(arg.getMtxData()[i]+arg._j1)), 1,(void*) (this->getMtxData()[i-arg._i1]), 1);
 		break;
 	default:
 		throw std::domain_error(
@@ -290,18 +284,14 @@ template<typename _Tp>
 _Tp& Matrix<_Tp>::operator()(int const i,   int const j) const {
 
 	if (i >= this->getDim_i() || i < 0) {
-		MB_OUT_ERR(
-				" operator(i,j)! Array index out of bounds. Cannot retrieve Matrix element. ",
-				__FILE__, __LINE__)
-																								throw std::out_of_range("row index out of bounds.");
+		MB_OUT_ERR(" operator(i,j)! Array index out of bounds. Cannot retrieve Matrix element. ", 	__FILE__, __LINE__);
+		throw std::out_of_range("row index out of bounds.");
 
 	}
 
 	if (j >= this->getDim_j() || j < 0) {
-		MB_OUT_ERR(
-				"operator(i,j)! Array index out of bounds. Cannot retrieve Matrix element. ",
-				__FILE__, __LINE__)
-																								throw std::out_of_range("column index out of bounds.");
+		MB_OUT_ERR( "operator(i,j)! Array index out of bounds. Cannot retrieve Matrix element. ",__FILE__, __LINE__);
+		throw std::out_of_range("column index out of bounds.");
 	}
 
 	return _data[i][j];
@@ -317,8 +307,7 @@ Matrix<_Tp>& Matrix<_Tp>::operator=(const Matrix<_Tp>& arg) {
 	if(this == &arg)
 		return *this;
 
-	if (_i2-_i1 != arg._i2-arg._i1
-			|| _j2-_j1 != arg._j2-arg._j1) {
+	if (_i2-_i1 != arg._i2-arg._i1 	|| _j2-_j1 != arg._j2-arg._j1) {
 		MB_OUT_ERR(" copy assignment operator! Mtx dimensions mismatch!",__FILE__,__LINE__);
 		throw std::length_error("Matrix Dimensions do not aggree.");
 	}
@@ -336,14 +325,14 @@ Matrix<_Tp>& Matrix<_Tp>::operator=(const Matrix<_Tp>& arg) {
 		for (int i = _i1; i<= _i2;i++)
 			cblas_dcopy(N, (double*) arg.getMtxData()[i+(arg._i1-_i1)]+arg._j1, 1, (double*) this->getMtxData()[i]+_j1, 1);
 		break;
-	case CPLXFLT:
+	case CPLX_FLOAT:
 		for (int i = _i1; i<= _i2;i++)
-			cblas_ccopy(N, (void*) arg.getMtxData()[i+(arg._i1-_i1)]+arg._j1, 1,(void*) this->getMtxData()[i]+_j1, 1);
+			cblas_ccopy(N, (void*) ((COMPLEXFLOAT*)arg.getMtxData()[i+(arg._i1-_i1)]+arg._j1), 1,(void*) ((COMPLEXFLOAT*)this->getMtxData()[i]+_j1), 1);
 		break;
-	case CPLXDBL:
+	case CPLX_DOUBLE:
 
 		for (int i = _i1; i<= _i2;i++)
-			cblas_zcopy(N, (void*) arg.getMtxData()[i+(arg._i1-_i1)]+arg._j1, 1, (void*) this->getMtxData()[i]+_j1, 1);
+			cblas_zcopy(N, (void*) ((COMPLEXDOUBLE*) arg.getMtxData()[i+(arg._i1-_i1)]+arg._j1), 1, (void*) ((COMPLEXDOUBLE*) this->getMtxData()[i]+_j1), 1);
 		break;
 	default:
 		throw std::domain_error(
@@ -365,10 +354,10 @@ Matrix<_Tp> Matrix<_Tp>::operator*(const Matrix<_Tp>& arg) const {
 	int L = arg.getDim_j();
 	Matrix<_Tp> res(this->getDim_i(), L);
 
-	std::complex<float> alpha_f = 1.0;
-	std::complex<double> alpha_d = 1.0;
-	std::complex<double> beta_d = 0.;
-	std::complex<float>  beta_f = 0.;
+	COMPLEXFLOAT alpha_f = 1.0;
+	COMPLEXDOUBLE alpha_d = 1.0;
+	COMPLEXDOUBLE beta_d = 0.;
+	COMPLEXFLOAT  beta_f = 0.;
 	switch (gettype<_Tp>()) {
 	case FLT:
 
@@ -385,7 +374,7 @@ Matrix<_Tp> Matrix<_Tp>::operator*(const Matrix<_Tp>& arg) const {
 				(double*) *arg.getMtxData(), arg.getDim_i(), 0.,
 				(double*) *res.getMtxData(), this->getDim_i());
 		break;
-	case CPLXFLT:
+	case CPLX_FLOAT:
 		cblas_cgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, this->getDim_i(),
 				arg.getDim_j(), this->getDim_j(), (void*) &alpha_f,
 				(void*) *this->getMtxData(), this->getDim_i(),
@@ -393,7 +382,7 @@ Matrix<_Tp> Matrix<_Tp>::operator*(const Matrix<_Tp>& arg) const {
 				(void*) *res.getMtxData(), this->getDim_i());
 		break;
 
-	case CPLXDBL:
+	case CPLX_DOUBLE:
 		cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, this->getDim_i(),
 				arg.getDim_j(), this->getDim_j(), (void*) &alpha_d,
 				(void*) *this->getMtxData(), this->getDim_i(),
@@ -422,29 +411,30 @@ Matrix<_Tp> Matrix<_Tp>::operator+(const Matrix<_Tp>& arg) const {
 	//the below operation invokes the copy constructor!
 	// the result matrix will be of size
 	// (_i2-_i1 + 1) x (_j2 - _j1 + 1) , i.e. the size of the current slice of this and arg!
-	Matrix<_Tp> res = arg;
 
-	std::complex<double> alpha_d = 1.;
-	std::complex<float>  alpha_f = 1.;
+	Matrix<_Tp> res = arg; // res is not sliced !
+
+	COMPLEXDOUBLE alpha_d = 1.;
+	COMPLEXFLOAT  alpha_f = 1.;
 	int N = _j2-_j1+1;
 
 	switch (gettype<_Tp>()) {
 	case FLT:
 		for(int i = _i1; i <= _i2; i++)
-			cblas_saxpy(N, 1.0, (float*) this->getMtxData()[i]+_j1,	1, (float*) res.getMtxData()[i-_i1], 1);
+			cblas_saxpy(N, 1.0, (float*) (this->getMtxData()[i]+_j1),	1, (float*) res.getMtxData()[i-_i1], 1);
 
 		break;
 	case DBL:
 		for(int i = _i1; i <= _i2; i++)
-			cblas_daxpy(N, 1.0, (double*) this->getMtxData()[i]+_j1,1, (double*) res.getMtxData()[i-_i1], 1);
+			cblas_daxpy(N, 1.0, (double*) (this->getMtxData()[i]+_j1),1, (double*) res.getMtxData()[i-_i1], 1);
 		break;
-	case CPLXFLT:
+	case CPLX_FLOAT:
 		for(int i = _i1; i <= _i2; i++)
-			cblas_caxpy(N, (void*) &alpha_f,(void*) this->getMtxData()[i]+_j1, 1,(void*) res.getMtxData()[i-_i1], 1);
+			cblas_caxpy(N, (void*) &alpha_f,(void*) ((COMPLEXFLOAT*) (this->getMtxData()[i]+_j1)), 1,(void*) (COMPLEXFLOAT*) res.getMtxData()[i-_i1], 1);
 		break;
-	case CPLXDBL:
+	case CPLX_DOUBLE:
 		for(int i = _i1; i <= _i2; i++)
-			cblas_zaxpy(N, (void*) &alpha_d,(void*) this->getMtxData()[i]+_j1, 1,(void*) res.getMtxData()[i-_i1], 1);
+			cblas_zaxpy(N, (void*) &alpha_d,(void*) ( (COMPLEXDOUBLE*)(this->getMtxData()[i]+_j1)), 1,(void*) (COMPLEXDOUBLE*) res.getMtxData()[i-_i1], 1);
 		break;
 	default:
 		throw std::domain_error(
@@ -468,6 +458,6 @@ Matrix<_Tp> Matrix<_Tp>::operator-(const Matrix<_Tp>& arg) {
 	return (*this) + res;
 }
 template class MB::Matrix<float>;
-template class MB::Matrix< std::complex<float> >;
+template class MB::Matrix< COMPLEXFLOAT>;
 template class MB::Matrix<double>;
-template class MB::Matrix<std::complex<double> >;
+template class MB::Matrix<COMPLEXDOUBLE >;

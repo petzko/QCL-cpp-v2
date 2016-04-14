@@ -4,5 +4,5 @@
 
 USER_OBJS :=
 
-LIBS := -lgslcblas
+LIBS := -lgslcblas -lmx -lmat
 

@@ -11,13 +11,13 @@
 #include "../common/utils.hpp"
 #include "../parsers/SimFileParser.hpp"
 
+
 #include <stdlib.h>
 #include <stdlib.h>
 
 std::vector<std::string>  getOptionFromFile(char* filename, std::string option);
 std::vector<std::string> tokenize(std::string str, std::string DELIMITER);
 std::string normalizeStr(std::string str);
-
 
 
 

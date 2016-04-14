@@ -92,7 +92,8 @@ std::vector<std::string>  getOptionFromFile(char* filename, std::string option){
 					for (int i=1; i<tokens.size();i++)
 						result.push_back(tokens[i]);
 					std::cout << "Option: " << option << " found. Value is:\n";
-					for_each(result.begin(),result.end(),[](std::string str){std::cout << str << " "; });
+					for (int i=0; i<result.size();i++)
+						std::cout << result[i] << " ";
 					std::cout << "\n";
 					break;
 				}
@@ -110,5 +111,4 @@ std::vector<std::string>  getOptionFromFile(char* filename, std::string option){
 
 	return result;
 }
-
 

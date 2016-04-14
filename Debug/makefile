@@ -51,7 +51,7 @@ all: qcl-sim-cpp
 qcl-sim-cpp: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L"/home/petzko/workspace/qcl-sim-cpp/lib" -o "qcl-sim-cpp" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L/mnt/SHARED/Matlab_Linux/bin/glnxa64 -L"/home/petzko/workspace/qcl-sim-cpp/lib" -o "qcl-sim-cpp" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

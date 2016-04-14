@@ -18,14 +18,14 @@ class RNFDSolver: public PropagationEqnSolver<_Tp>{
 private:
 	int _N;
 	double _dx;
-	bool _direction;
+	bool p_direction;
 	double _c;
 	MB::Matrix<_Tp> _sol;
 
 public:
 
 	RNFDSolver(unsigned int N, double dx, bool direction, double velocity, MB::Matrix<_Tp> U_0);
-	_Tp makeStep(MB::Matrix<_Tp> F, MB::Matrix<_Tp> F_t, MB::Matrix<_Tp> K, double dt) ;
+	_Tp makeStep(MB::Matrix<_Tp>& F, MB::Matrix<_Tp>& F_t, MB::Matrix<_Tp>& K, double dt) ;
 
 	/**
 	 * set the boundary of the wave vector!

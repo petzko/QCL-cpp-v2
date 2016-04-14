@@ -8,15 +8,15 @@
 #ifndef INCLUDE_UTILS_HPP_
 #define INCLUDE_UTILS_HPP_
 
-#include <complex>
 #include <typeinfo>
 #include <iostream>
 #include <sstream>
 
 #include <stdexcept>
 #include <stdlib.h>
-#include <time.h>       /* time */
 
+/* time */
+#include <time.h>
 
 #include <map>
 #include <vector>
@@ -24,82 +24,84 @@
 
 #include <assert.h>
 
+#define CPP_CPLX
+#ifdef CPP_CPLX
+
+#include <complex>
+#define COMPLEXDOUBLE std::complex<double>
+#define COMPLEXFLOAT std::complex<float>
+
+/**
+ * redefine the imaginary unit to be on par with complex.h
+ */
+#define I _TYPE_(0,1)
+
+#define REAL(x) std::real(x)
+#define IMAG(x) std::imag(x)
+#define ABS(x) std::abs(x)
+
+
+#else
+
+#include <complex.h>
+
+#define COMPLEXDOUBLE    complex double
+#define COMPLEXFLOAT     complex float
+
+#define REAL(x) (creal(x))
+#define IMAG(x) (cimag(x))
+#define  ABS(x)  sqrt(REAL(x)*REAL(x) + IMAG(x)*IMAG(x))
+
+#endif
+
+
+#define _TYPE_  COMPLEXDOUBLE
+#define _i I
+
+
+enum TYPE_ID {FLT , DBL, CPLX_FLOAT, CPLX_DOUBLE , UNDEF};
+
 
 #include <gsl/gsl_cblas.h>
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_complex.h>
 
-#define _TYPE_ std::complex<double>
+
+
 
 #define MB_OUT_WRN(str,FILE,LINE){\
-	std::cout<<"FILE:" << FILE << " LINE:" << LINE << ":\n->WARNING: " << str << "\n";}
+		std::cout<<"FILE:" << FILE << " LINE:" << LINE << ":\n->WARNING: " << str << "\n";}
 
 #define MB_OUT_ERR(str,FILE,LINE){\
-	std::cout<<"FILE:" << FILE << " LINE:" << LINE << ": \n->ERROR: " << str << "\n";}
+		std::cout<<"FILE:" << FILE << " LINE:" << LINE << ": \n->ERROR: " << str << "\n";}
 
 //#define max(x,y){ (x>y ? x:y) }
 //#define min(x,y){ (x<y ? x:y) }
 
 #define explicit_cast(type,data){*((type*)&data)}
-//predefine the BLAS supported datatypes -> single and double precision real and complex numbers...
-
-const int FLT = 0;
-const int DBL = 1;
-const int CPLXFLT = 2;
-const int CPLXDBL = 3;
 
 
 
 
-//std::ostream& operator<<(std::ostream& out, complex double nr);
-//std::ostream& operator<<(std::ostream& out, complex float nr);
 
 template<typename _Tp>
-int gettype() {
-
+TYPE_ID gettype() {
 	double dbl = 0.;
 	float flt = 0.;
-	std::complex<double>cdbl (0,1);
-	std::complex<float> cflt (0,1);
+
+	COMPLEXDOUBLE cdbl  = (COMPLEXDOUBLE)(_i);
+	COMPLEXFLOAT cflt  = (COMPLEXFLOAT)(_i);
+
 
 	if (typeid(_Tp) == typeid(flt))
 		return FLT;
 	if (typeid(_Tp) == typeid(dbl))
 		return DBL;
 	if (typeid(_Tp) == typeid(cflt))
-		return CPLXFLT;
+		return CPLX_FLOAT;
 	if (typeid(_Tp) == typeid(cdbl))
-		return CPLXDBL;
-	return -1;
+		return CPLX_DOUBLE;
+	return UNDEF;
 
 }
-//
-//template<typename _Tp>
-//int gettype(_Tp in) {
-//
-//	double dbl = 0.;
-//	float flt = 0.;
-//	std::complex<double>cdbl (0,1);
-//	std::complex<float> cflt (0,1);
-//
-//	int intr = 1;
-//	double* dptr;
-//
-//	if (typeid(in) == typeid(flt))
-//		return FLT;
-//	if (typeid(in) == typeid(dbl))
-//		return DBL;
-//	if (typeid(in) == typeid(cflt))
-//		return CPLXFLT;
-//	if (typeid(in) == typeid(cdbl))
-//		return CPLXDBL;
-//	if (typeid(in) == typeid(intr))
-//			return INTGR;
-//	if (typeid(in) == typeid(cdbl))
-//			return D_PTR;
-//	return -1;
-//
-//}
 
 
 /**

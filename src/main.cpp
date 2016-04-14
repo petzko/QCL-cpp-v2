@@ -62,9 +62,6 @@ void parseTest(){
 	char* setFname  = "/home/petzko/workspace/qcl-sim-cpp/Debug/12-1-off.set";
 	SimSettings set(simFname,setFname);
 	set.initSimSettings();
-
-
-
 }
 
 void swaprows(){
@@ -89,31 +86,62 @@ void initTest(){
 	std::cout << m2;
 
 	MB::Matrix<_TYPE_> m3=randInit<_TYPE_>(1,4);
-	m3 = m3+ _TYPE_(0,1)*randInit<_TYPE_>(1,4,10);
+	//	m3 = m3+ _TYPE_(0,1)*randInit<_TYPE_>(1,4,10);
 	std::cout << "rand:";
 	std::cout << m3;
 
 	MB::Matrix<_TYPE_> m4(0,0);
-//	m4.init(1,4);
+	//	m4.init(1,4);
 	std::cout << "Zeros:";
 	std::cout<<m4;
 
+}
 
+void trace(){
 
+	int N = 3;
+	MB::Matrix<_TYPE_> m1= eye<_TYPE_>(N);
+	m1(1,1) = 2;
+	m1(2,2) = 3;
+	std::cout << m1;
+	MB::Matrix<_TYPE_> m0= 0*eye<_TYPE_>(1);
+
+	for (int i = 0; i <N; i++ ){
+		m1.setSlice(i,i,i,i);
+		m0 =   m0 +2.0*m1;
+		//		m1.resetSlice();
+		std::cout <<"m1 at " << i << " is:\n -> \n" <<m1<< "\n";
+		std::cout <<"m0 at " << i << " is:\n -> " <<m0<< "\n";
+
+	}
+
+	std::cout << "Trace is : " << m0 << "\n";
+}
+
+void testRealImagConj(){
+
+	MB::Matrix<_TYPE_> m1 = eye<_TYPE_>(3)-_i * eye<_TYPE_>(3);
+	std::cout <<"M1: \n" <<m1 <<"\nReal M1:\n " << realVal(m1) << "\nImag M1:\n" << imagVal(m1) << "\n conj M1:\n" << conjVal(m1) <<"\n";
 
 }
 
+
 int main() {
 
-//	compute();
-//	swaprows();
-//	parseTest();
-//	initTest();
+	//	compute();
+	//	swaprows();
+	//	parseTest();
+	//	initTest();
+
+
+	//	trace();
+	//	testRealImagConj();
 
 	char* simFname  = "/home/petzko/workspace/qcl-sim-cpp/Debug/OPTICAMAIN.sim";
 	char* setFname  = "/home/petzko/workspace/qcl-sim-cpp/Debug/12-1-off.set";
 
 	startSim(simFname,setFname);
+
 	std::cout << "\n";
 	std::cout<<"Goodbye world\n";
 

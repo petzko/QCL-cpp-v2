@@ -47,7 +47,7 @@ public:
 	/**
 	 * Overload the assignment operator!! Extremely important in order to be able to correctly execute arithmetic operations on matrices with  syntax!!!
 	 */
-	Matrix<_Tp> & operator=( Matrix<_Tp> const &  arg);
+	Matrix<_Tp>& operator=( Matrix<_Tp> const &  arg);
 
 	/**
 	 * Return by reference (implicit pointer) to the i,j-th data element
@@ -117,45 +117,52 @@ public:
 
 		std::vector<int> slice = obj.getSliceVector();
 
-		for (int i = slice[0]; i <= slice[1]; i++) {
-			for (int j = slice[2]; j <= slice[3]; j++)
-				os << obj.getMtxData()[i][j] << " ";
-			os << "\n";
+
+
+		if(gettype<_Tp>() == CPLX_DOUBLE || gettype<_Tp>() ==CPLX_FLOAT )
+		{
+			for (int i = slice[0]; i <= slice[1]; i++) {
+				for (int j = slice[2]; j <= slice[3]; j++){os << "(" << REAL((_TYPE_)obj.getMtxData()[i][j]) << "," <<IMAG((_TYPE_)obj.getMtxData()[i][j]) <<") ";}
+				os << "\n";
+			}
+
+		}else{
+			for (int i = slice[0]; i <= slice[1]; i++) {
+				for (int j = slice[2]; j <= slice[3]; j++){os << obj.getMtxData()[i][j] << " ";}
+				os << "\n";
+			}
 		}
+
 		return os;
 	}
 
 	friend Matrix<_Tp> operator*(_Tp lhs, const Matrix<_Tp>& rhs) {
-		MB::Matrix<_Tp> res = rhs;
 
+		MB::Matrix<_Tp> res = rhs; // res is not sliced!
 		std::vector<int> slice = rhs.getSliceVector();
 		int N = slice[3]-slice[2]+1;
-
-		//		std::cout << "slice: " << slice[0] << " " << slice[1] << " " << slice[2] << " " << slice[3]  << " \n";
-
-		int type = gettype<_Tp>();
-
+		int M = slice[1] - slice[0]+1;
+		TYPE_ID type = gettype<_Tp>();
 		switch (type) {
 		case FLT:
-			for (int i = slice[0]; i <= slice[1]; i++)
-				cblas_sscal(N, explicit_cast(float,lhs), (float*) (res._data[i] +  slice[2]),1);
+			for (int i = 0; i <M; i++)
+				cblas_sscal(N, explicit_cast(float,lhs), (float*) res._data[i],1);
 			break;
 		case DBL:
-			for (int i = slice[0]; i <= slice[1]; i++)
-				cblas_dscal(N , explicit_cast(double,lhs), (double*) (res._data[i]+slice[2]),	1);
+			for (int i = 0; i <M; i++)
+				cblas_dscal(N , explicit_cast(double,lhs), (double*) res._data[i],	1);
 			break;
-		case CPLXFLT:
-			for (int i = slice[0]; i <= slice[1]; i++)
-				cblas_cscal(N , (void*) &lhs, (void*)  (res._data[i]+slice[2]), 1);
+		case CPLX_FLOAT:
+			for (int i = 0; i <M; i++)
+				cblas_cscal(N , (void*) &lhs, (void*)  res._data[i], 1);
 			break;
-		case CPLXDBL:
-			for (int i = slice[0]; i <= slice[1]; i++)
-				cblas_zscal(N, (void*) &lhs, (void*)  (res._data[i]+slice[2]), 1);
+		case CPLX_DOUBLE:
+			for (int i = 0; i <M; i++)
+				cblas_zscal(N, (void*) &lhs, (void*) res._data[i], 1);
 			break;
 		default:
 			throw std::domain_error("Unsupported matrix scale operation");
 		}
-
 		return res;
 	}
 
@@ -177,6 +184,44 @@ MB::Matrix<_Tp> eye(int M) {
 	return res;
 }
 
+template<typename _Tp>
+MB::Matrix<_Tp> realVal(const MB::Matrix<_Tp>& m) {
+
+	MB::Matrix<_Tp> res = m;
+
+	for (int i = 0; i < res.getDim_i(); i++)
+		for (int j = 0; j < res.getDim_j(); j++)
+			res(i, j) = REAL(res(i,j));
+
+	return res;
+}
+
+
+template<typename _Tp>
+MB::Matrix<_Tp> imagVal(const MB::Matrix<_Tp>& m) {
+
+	MB::Matrix<_Tp> res = m;
+	for (int i = 0; i < res.getDim_i(); i++)
+		for (int j = 0; j < res.getDim_j(); j++)
+			res(i, j) = IMAG(res(i,j));
+
+	return res;
+
+}
+
+
+template<typename _Tp>
+MB::Matrix<_Tp> conjVal(const MB::Matrix<_Tp>& m) {
+
+	MB::Matrix<_Tp> res = m;
+	for (int i = 0; i < res.getDim_i(); i++)
+		for (int j = 0; j < res.getDim_j(); j++)
+			res(i, j) = REAL(res(i,j)) - _i*IMAG(res(i,j));
+
+	return res;
+
+}
+
 
 template<typename _Tp>
 MB::Matrix<_Tp> ones(int M,int N) {
@@ -194,7 +239,7 @@ template<typename _Tp>
 MB::Matrix<_Tp> randInit(int M,int N, int seed  = 0) {
 
 	/* initialize random seed: */
-//	int time_ui = time(NULL);
+	//	int time_ui = time(NULL);
 	srand (time(NULL) + seed);
 	MB::Matrix<_Tp> res(M, N);
 

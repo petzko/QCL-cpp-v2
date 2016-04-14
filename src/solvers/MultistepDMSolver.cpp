@@ -67,7 +67,7 @@ MB::Matrix<_Tp> MB::MultistepDMSolver<_Tp>::makeStep(MB::Matrix<_Tp> rhs, double
 
 	for (int k = 0; k < _m ; k++){
 		_data.setSlice(k,k,0,_N-1);
-		_sol = _sol +dt*_coefs[k]*_data;
+//		_sol = _sol +dt*_coefs[k]*_data;
 	}
 	_data.resetSlice();
 
@@ -132,6 +132,6 @@ std::vector<double> MB::MultistepDMSolver<_Tp>::getCoeffs(unsigned int step,unsi
 }
 
 template class MB::MultistepDMSolver<float>;
-template class MB::MultistepDMSolver< std::complex<float> >;
+template class MB::MultistepDMSolver< COMPLEXFLOAT >;
 template class MB::MultistepDMSolver<double>;
-template class MB::MultistepDMSolver<std::complex<double> >;
+template class MB::MultistepDMSolver< COMPLEXDOUBLE >;

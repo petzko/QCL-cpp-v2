@@ -11,13 +11,13 @@ MB::RNFDSolver<_Tp>::RNFDSolver(unsigned int N, double dx, bool direction, doubl
 
 	this->_N = N;
 	this->_dx = dx;
-	this->_direction = direction;
+	this->p_direction = direction;
 	this->_c  = velocity;
 	this->_sol.init(U_0.getDim_i(),U_0.getDim_j());
 	this->_sol = U_0;
 }
 template<typename _Tp>
-_Tp MB::RNFDSolver<_Tp>::makeStep(MB::Matrix<_Tp> F, MB::Matrix<_Tp> F_t, MB::Matrix<_Tp> K, double dt) {
+_Tp MB::RNFDSolver<_Tp>::makeStep(MB::Matrix<_Tp>& F, MB::Matrix<_Tp>& F_t, MB::Matrix<_Tp>& K, double dt) {
 
 	if(this->_c*dt != this->_dx){
 		MB_OUT_ERR("RNFDsolver make step failed! Magic time step not selected!",__FILE__,__LINE__);
@@ -30,14 +30,13 @@ _Tp MB::RNFDSolver<_Tp>::makeStep(MB::Matrix<_Tp> F, MB::Matrix<_Tp> F_t, MB::Ma
 
 	}
 
-
-
 	//	 The solver assumes an equation of the form
 	//	 D_t(E) = -/+ D_x(E) + f(x,t) + k E
 	_sol.resetSlice();
 	MB::Matrix<_Tp> E = _sol;
+	dt = 0;
 
-	double dt_2 = dt*dt/2;
+	double dt_2 = (dt*dt)/2;
 	double dx_1 = 1/_dx;
 
 	E.setSlice(0,0,1,_N-1);
@@ -47,7 +46,7 @@ _Tp MB::RNFDSolver<_Tp>::makeStep(MB::Matrix<_Tp> F, MB::Matrix<_Tp> F_t, MB::Ma
 	MB::Matrix<_Tp> F_x = F*dx_1;
 
 	E.setSlice(0,0,0,_N-2);
-	F.setSlice(0,0,2,_N-2);
+	F.setSlice(0,0,0,_N-2);
 	E_x = E_x-E*dx_1;
 	F_x = F_x-F*dx_1;
 
@@ -63,7 +62,7 @@ _Tp MB::RNFDSolver<_Tp>::makeStep(MB::Matrix<_Tp> F, MB::Matrix<_Tp> F_t, MB::Ma
 	 *
 	 */
 
-	if(this->_direction > 0){
+	if(p_direction){
 		// 1:N-1
 		_sol.setSlice(0,0,1,_N-1);
 		E.setSlice(0,0,0,_N-2);
@@ -83,10 +82,13 @@ _Tp MB::RNFDSolver<_Tp>::makeStep(MB::Matrix<_Tp> F, MB::Matrix<_Tp> F_t, MB::Ma
 		_sol = _sol+dt_2*(F_t+_c*F_x+2*_c*mMult(K,E_x) + mMult(K,F) + mMult(mMult(K,K),E)) + dt*(F+mMult(K,E));
 	}
 
+	F.resetSlice();
+	F_t.resetSlice();
+	K.resetSlice();
 	this->_sol.resetSlice();
 
 	_Tp res;
-	if(_direction > 0 )
+	if(p_direction )
 		res = _sol(0,_N-1);
 	else
 		res = _sol(0,0);
@@ -97,10 +99,9 @@ _Tp MB::RNFDSolver<_Tp>::makeStep(MB::Matrix<_Tp> F, MB::Matrix<_Tp> F_t, MB::Ma
 
 template<typename _Tp>
 void  MB::RNFDSolver<_Tp>::setBdry(_Tp val,unsigned int flag){
-	if (flag >1 ){
+	if (flag <0 || flag >= _N){
 		MB_OUT_ERR(" setBdry(:)! Boundary location flag outside allowed domain.",__FILE__,__LINE__);
 		throw std::domain_error("Check boundary flag? ") ;
-
 	}
 	this->_sol(0,flag) = val;
 }
@@ -126,6 +127,6 @@ MB::RNFDSolver<_Tp>::~RNFDSolver(){
 
 
 template class MB::RNFDSolver<float>;
-template class MB::RNFDSolver< std::complex<float> >;
+template class MB::RNFDSolver< COMPLEXFLOAT>;
 template class MB::RNFDSolver<double>;
-template class MB::RNFDSolver<std::complex<double> >;
+template class MB::RNFDSolver< COMPLEXDOUBLE >;

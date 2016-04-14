@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+environment/project/cdt.managedbuild.config.gnu.exe.debug.896515727/LD_LIBRARY_PATH/delimiter=\:
+environment/project/cdt.managedbuild.config.gnu.exe.debug.896515727/LD_LIBRARY_PATH/operation=append
+environment/project/cdt.managedbuild.config.gnu.exe.debug.896515727/LD_LIBRARY_PATH/value=$LD_LIBRARY_PATH\:/mnt/SHARED/Matlab_Linux/bin/glnxa64
+environment/project/cdt.managedbuild.config.gnu.exe.debug.896515727/append=true
+environment/project/cdt.managedbuild.config.gnu.exe.debug.896515727/appendContributed=true

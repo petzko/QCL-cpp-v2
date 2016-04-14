@@ -1,10 +1,10 @@
-/*
- * SimData.hpp
- *
- *  Created on: Apr 8, 2016
- *      Author: petzko
- */
-
+///*
+// * SimData.hpp
+// *
+// *  Created on: Apr 8, 2016
+// *      Author: petzko
+// */
+//
 #ifndef SRC_SIM_SIMDATA_HPP_
 #define SRC_SIM_SIMDATA_HPP_
 
@@ -21,21 +21,31 @@ namespace MB{
 
 struct SimData{
 	double c,T_R,f_R,hbar;
-	int INJ,ULL,LLL,RES,DEPOP;
-	int NLVL;
+	size_t INJ,ULL,LLL,RES,DEPOP;
+	size_t NLVL;
 
 	double E0,l0;
 	double dx,dt;
 
 	double diffusion;
 	double zUL, Ncarriers,trace_rho;
-	double t; int iter_ctr; int N_t;
+	double t;
+	size_t iter_ctr;
+	size_t N_t;
 
-	std::vector< std::vector<double> > W;std::vector<double>  G;
+	std::vector< std::vector<double> > W;
+	std::vector< std::vector<double> > HTB;
+	std::vector<double>  G;
 
 	double losses;
 	double dipR = 1;
-	std::complex<double> factor;
+	COMPLEXDOUBLE factor;
+
+	COMPLEXDOUBLE dE32;
+	COMPLEXDOUBLE dE13;
+	COMPLEXDOUBLE dE12;
+
+
 
 	// Maxwell Variables
 	MB::Matrix<_TYPE_> U;

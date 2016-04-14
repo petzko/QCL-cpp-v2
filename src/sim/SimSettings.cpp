@@ -23,7 +23,7 @@ void MB::SimSettings::initSimSettings(){
 	std::vector<std::string> res(0);
 
 	res =  getOptionFromFile(this->setFileName,"scenario");
-	std::stringstream(res[0]) >> simname;
+//	std::stringstream(res[0]) >> simname;
 
 	//shall I include spatial hole burning or not
 	res =  getOptionFromFile(this->setFileName,"shb");
